@@ -9,7 +9,7 @@ import Login from './containers/Login';
 import CreateAccount from './containers/CreateAccount';
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userAuthInfo, setUserAuthInfo] = useState({});
 
@@ -26,22 +26,14 @@ useEffect (() => {
   if(!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
-
-  firebase
-  .auth()
-  .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-  .catch(function (e) {
-    console.log("INSTANTIATING AUTH ERROR", e);
-  });
-}, []);
+}, [firebaseConfig]);
 
 useEffect(() => {
   firebase.auth().onAuthStateChanged(function(user) {
-    console.log({user})
     if(user) {
       // user is logged in
-      setLoggedIn(true);
       setUserAuthInfo(user);
+      setLoggedIn(true);
     } else {
       setUserAuthInfo({});
       setLoggedIn(false);
@@ -50,24 +42,86 @@ useEffect(() => {
   });
 }, []);
 
-if(loading) return null;
+function LoginFunction(e) {
+  e.preventDefault();
+  const email = e.currentTarget.loginEmail.value;
+  const password = e.currentTarget.loginPassword.value;
+
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(function(response) {
+      console.log('LOGIN RESPONSE', response);
+      setLoggedIn(true);
+    })
+    .catch(function(error) {
+      console.log('LOGIN ERROR', error);
+    });
+}
+
+function LogoutFunction() {
+  firebase
+  .auth()
+  .signOut()
+  .then(function() {
+    setLoggedIn(false);
+    setUserAuthInfo({})
+  })
+  .catch(function (error) {
+    console.log("LOGOUT ERROR", error);
+  })
+}
+
+function CreateAccountFunction(e) {
+  e.preventDefault();
+  const email = e.currentTarget.createEmail.value;
+  const password = e.currentTarget.createPassword.value;
+
+  firebase
+    .auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(function (response) {
+      console.log('VALID ACCOUNT CREATED FOR:', email, response);
+      setLoggedIn(true);
+    })
+    .catch(function(error) {
+      console.log('ACCOUNT CREATION FAILED', error);
+    })
+}
+console.log({userAuthInfo});
+
+if (loading) return null;
+
+console.log('userAuthInfo');
 
 
   return (
     <div className="App">
       <Router>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route exact path="/create-account">
-          <CreateAccount />
-        </Route>
-        <Route exact path="/home">
-          <Home />
+      <Route exact path="/login">
+        {/* If someone is logged in, do not take them to login page - take them to user profile */}
+        {!loggedIn ? (
+                <Login LoginFunction={LoginFunction}/>
+        ) : (
+            <Redirect to="/" />
+        )}
+      </Route>
+      <Route exact path="/create-account">
+        {/* if someone is logged in, do not take htem to create account page - take them to user profile */}
+        {!loggedIn ? (
+        <CreateAccount CreateAccountFunction={CreateAccountFunction}/>
+        ) : (
+          <Redirect to="/" />
+      )}
+      </Route>
+      <Route exact path="/">
+      {!loggedIn ? (
+      <Redirect to="/login" /> 
+      ) : ( <Home user={userAuthInfo} /> )} 
         </Route>
 
       </Router>
-      <Home />
+      {/* <Home /> */}
     </div>
   );
 }
