@@ -6,7 +6,7 @@ function Home() {
 
     useEffect(() => {
         axios
-        .get(`http://localhost:4000`) // link to heroku
+        .get(`https://damp-journey-22196.herokuapp.com/`) // link to heroku
         .then(function(response) {
             if(response.data){
                 setPoemAPIData(response.data);   
