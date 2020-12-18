@@ -7,6 +7,10 @@ import "firebase/auth";
 import Home from './containers/Home';
 import Login from './containers/Login';
 import CreateAccount from './containers/CreateAccount';
+import UserProfile from './containers/UserProfile';
+
+import Header from "./components/Header";
+
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -97,6 +101,8 @@ console.log('userAuthInfo');
 
   return (
     <div className="App">
+      <Header loggedIn={loggedIn} LogoutFunction={LogoutFunction}/>
+
       <Router>
       <Route exact path="/login">
         {/* If someone is logged in, do not take them to login page - take them to user profile */}
