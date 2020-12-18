@@ -2,11 +2,12 @@ import React from 'react';
 import UserProfileComponent from "../components/UserProfileComponent";
 
 
-function UserProfile({ userInformation }) {
+function UserProfile({ userAuthInfo }) {
     return (
         <div>
             <h1>User Profile</h1>
-            <UserProfileComponent userInformation={userInformation} />
+            <UserProfileComponent userAuthInfo={userAuthInfo} />
+            
         </div>
         );
     }

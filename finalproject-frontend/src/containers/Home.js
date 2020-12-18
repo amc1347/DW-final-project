@@ -7,6 +7,7 @@ function Home() {
     useEffect(() => {
         axios
         .get(`https://damp-journey-22196.herokuapp.com/`) // link to heroku
+        // .get(`http//localhost:4000`) // link to heroku
         .then(function(response) {
             if(response.data){
                 setPoemAPIData(response.data);   
@@ -24,9 +25,9 @@ function Home() {
         <h1>Dead Poet's Society</h1>
         {poemAPIData.map((item,  i) => (
             <div key={i}>
-            <p>Name: {item.name}</p>
+            <p>Author: {item.author}</p>
             <p>Title: {item.title}</p>
-            <p>Poem: {item.poem}</p>
+            <p>Poem: {item.text}</p>
             </div>
     ))}
         </div>

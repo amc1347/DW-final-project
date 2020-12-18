@@ -8,6 +8,7 @@ import Home from './containers/Home';
 import Login from './containers/Login';
 import CreateAccount from './containers/CreateAccount';
 import UserProfile from './containers/UserProfile';
+import NewPost from './containers/NewPost';
 
 import Header from "./components/Header";
 
@@ -26,6 +27,9 @@ function App() {
     appId: "1:728560297146:web:80083163520b65bbc9ce83"
 };
 
+// from exercise 5
+
+
 useEffect (() => {
   if(!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -34,12 +38,13 @@ useEffect (() => {
 
 useEffect(() => {
   firebase.auth().onAuthStateChanged(function(user) {
+    console.log({user})
     if(user) {
       // user is logged in
       setUserAuthInfo(user);
       setLoggedIn(true);
     } else {
-      setUserAuthInfo({});
+      // setUserAuthInfo({});
       setLoggedIn(false);
     }
     setLoading(false);
@@ -69,7 +74,7 @@ function LogoutFunction() {
   .signOut()
   .then(function() {
     setLoggedIn(false);
-    setUserAuthInfo({})
+    // setUserAuthInfo({})
   })
   .catch(function (error) {
     console.log("LOGOUT ERROR", error);
@@ -92,11 +97,30 @@ function CreateAccountFunction(e) {
       console.log('ACCOUNT CREATION FAILED', error);
     })
 }
+
+function NewPostFunction(e) {
+  e.preventDefault();
+  const author = e.currentTarget.createAuthor.value;
+  const title = e.currentTarget.createTitle.value;
+  const text = e.currentTarget.createText.value;
+
+  firebase 
+  .auth()
+  .createPostWithAuthorTitleText(author, title, text)
+  .then(function (response) {
+    console.log('Valid Post created by', author, response);
+  
+  })
+  .catch(function(error) {
+    console.log('Post failed', error);
+  })
+}
+
 console.log({userAuthInfo});
 
 if (loading) return null;
 
-console.log('userAuthInfo');
+// console.log('userAuthInfo');
 
 
   return (
@@ -104,27 +128,33 @@ console.log('userAuthInfo');
       <Header loggedIn={loggedIn} LogoutFunction={LogoutFunction}/>
 
       <Router>
+      {/* If someone is logged in, do not take them to login page - take them to user profile */}
+
       <Route exact path="/login">
-        {/* If someone is logged in, do not take them to login page - take them to user profile */}
         {!loggedIn ? (
-                <Login LoginFunction={LoginFunction}/>
+            <Login LoginFunction={LoginFunction}/>
         ) : (
-            <Redirect to="/" />
-        )}
+            // <Redirect to="/" />
+            <UserProfile userAuthInfo={userAuthInfo} /> )} 
       </Route>
       <Route exact path="/create-account">
         {/* if someone is logged in, do not take htem to create account page - take them to user profile */}
         {!loggedIn ? (
-        <CreateAccount CreateAccountFunction={CreateAccountFunction}/>
+            <CreateAccount CreateAccountFunction={CreateAccountFunction}/>
         ) : (
-          <Redirect to="/" />
-      )}
+            <Redirect to="/" />
+        )}
       </Route>
-      <Route exact path="/">
-      {!loggedIn ? (
-      <Redirect to="/login" /> 
-      ) : ( <Home user={userAuthInfo} /> )} 
-        </Route>
+      <Route exact path="/home">
+        <Home />
+      </Route>
+      <Route exact path="/new-post">
+        {!loggedIn ? (
+            <NewPost NewPostFunction={NewPostFunction} />
+        ) : ( 
+          <Redirect to="/" /> 
+        )}
+      </Route>
 
       </Router>
       {/* <Home /> */}

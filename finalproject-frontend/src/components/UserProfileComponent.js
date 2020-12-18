@@ -1,9 +1,9 @@
 import React from 'react';
 
-function UserProfileComponent({ userInformation }) {
+function UserProfileComponent({ userAuthInfo }) {
     return <div>
-        <p><strong>UID</strong>{userInformation.uid}</p>
-        <p><strong>Email</strong>{userInformation.email}</p>
+        <p><strong>UID</strong>{userAuthInfo.uid}</p>
+        <p><strong>Email</strong>{userAuthInfo.email}</p>
 
     </div>;
     
