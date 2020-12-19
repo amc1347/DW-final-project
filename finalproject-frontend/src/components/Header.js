@@ -7,7 +7,8 @@ function Header({ loggedIn, LogoutFunction}) {
                 {loggedIn ? (
                 <>
                 {/* <a href="/user-profile">User Profile</a> */}
-                <a href="/new-post">New Post</a>
+                {/* <a href="/new-post">New Post</a> */}
+                <a href="https://damp-journey-22196.herokuapp.com/create">New Post</a>
                 <a href="/home">Home</a>
 
                 <a onClick={() => LogoutFunction()} > Logout</a>
